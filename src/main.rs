@@ -1,4 +1,4 @@
-use std::{path::PathBuf, fs, thread::{JoinHandle, self}, sync::{atomic::AtomicI32, Arc}, process::{Stdio, Command}, time::{Instant, Duration}, str::from_utf8};
+use std::{path::PathBuf, fs, thread::{JoinHandle, self}, sync::{atomic::AtomicI32, Arc, Mutex}, process::{Stdio, Command}, time::{Instant, Duration}, str::from_utf8};
 
 use clap::{Arg, ArgAction};
 use process_control::{ChildExt, Control};
@@ -46,6 +46,7 @@ fn main() {
         .arg(Arg::new("time_limit").action(ArgAction::Set).short('t').alias("tl").default_value("32"))
         .arg(Arg::new("mem_limit").action(ArgAction::Set).short('m').alias("ml").default_value("256"))
         .arg(Arg::new("max_threads").action(ArgAction::Set).short('l').alias("th").default_value("10"))
+        .arg(Arg::new("print_failed").action(ArgAction::SetTrue).short('p').help("Print list of failed tests at the end"))
         .get_matches();
 
     let executable = m.get_one::<String>("executable").unwrap().clone();
@@ -54,6 +55,7 @@ fn main() {
     let time_limit = Arc::new(m.get_one::<String>("time_limit").unwrap().parse::<u64>().unwrap());
     let mem_limit = Arc::new(m.get_one::<String>("mem_limit").unwrap().parse::<usize>().unwrap() * 1_000_000);
     let thread_limit = m.get_one::<String>("max_threads").unwrap().parse::<usize>().unwrap();
+    let print_failed = m.get_flag("print_failed");
 
     // Load tests
     let mut tests: Vec<Test> = Vec::new();
@@ -91,6 +93,9 @@ fn main() {
     let ok_counter = Arc::new(AtomicI32::new(0));
     let err_counter = Arc::new(AtomicI32::new(0));
     let tle_counter = Arc::new(AtomicI32::new(0));
+    
+    // Create list of failed tests
+    let failed_tests: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
 
     // Run tests
     print_spacer();
@@ -105,6 +110,8 @@ fn main() {
         let executable = executable.clone();
         let time_limit = Arc::clone(&time_limit);
         let mem_limit = Arc::clone(&mem_limit);
+
+        let failed_tests = Arc::clone(&failed_tests);
         
         // And also clone counters
         let ok_counter = Arc::clone(&ok_counter);
@@ -157,6 +164,13 @@ fn main() {
                 } else {
                     println!("{} {}", pretty_name, "WRONG ANSWER".red().bold());
                     err_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
+                    // Add this test to the list of failed ones
+                    {
+                        let mut failed_list = failed_tests.lock().unwrap();
+                        let name = test.name.clone();
+                        failed_list.push(name);
+                    }
                 }
             }     
         });
@@ -170,11 +184,17 @@ fn main() {
 
     // Summary
     print_spacer();
-    println!("OK - {} | TLE - {} | WRONG ANSWER - {}", 
+    println!("OK - {} | TLE - {} | FAILED - {}", 
         ok_counter.load(std::sync::atomic::Ordering::Relaxed).to_string().green(),
         tle_counter.load(std::sync::atomic::Ordering::Relaxed).to_string().yellow(),
         err_counter.load(std::sync::atomic::Ordering::Relaxed).to_string().red(),
     );
     println!("Total testing time - {:.2}s", total_start.elapsed().as_secs_f32());
+
+    if print_failed {
+        print_spacer();
+        let failed_data = failed_tests.lock().unwrap();
+        println!("{} {}", "Failed tests:".red(), failed_data.join(", "));
+    }
 
 }
