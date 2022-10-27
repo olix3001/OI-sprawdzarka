@@ -10,7 +10,8 @@ Stworzyłem go aby automatycznie testować swoje programy na OI.
 ## Sposób użycia
 
 Aby dowiedzieć się jak korzystać z tego programu wywołaj go z flagą `--help`. <br/>
-Program przyjmuje pliki wykonywalne, nie należy podawać plików z kodem źródłowym.
+Program przyjmuje pliki wykonywalne, nie należy podawać plików z kodem źródłowym. <br/>
+`input` i `output` powinny być podane jako foldery, a pliki powinny być ponazywane odpowiednio `<nazwa>.in` dla wejścia, oraz `<nazwa>.out` dla wyjścia
 
 ## Zastrzeżenia
 
