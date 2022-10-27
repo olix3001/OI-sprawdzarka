@@ -3,6 +3,10 @@
 Ten program automatyzuje sprawdzanie programu na dużej ilości testów. <br/>
 Stworzyłem go aby automatycznie testować swoje programy na OI.
 
+## Screenshot
+
+![Sprawdzarka](./images/sprawdzarka.jpg)
+
 ## Sposób użycia
 
 Aby dowiedzieć się jak korzystać z tego programu wywołaj go z flagą `--help`. <br/>
