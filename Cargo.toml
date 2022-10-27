@@ -1,0 +1,12 @@
+[package]
+name = "sprawdzarka-v2"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+colored = "2.0.0"
+process_control = "4.0.0"
+clap = "4.0.18"
+termion = "*"
