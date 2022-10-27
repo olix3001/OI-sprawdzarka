@@ -10,3 +10,9 @@ colored = "2.0.0"
 process_control = "4.0.0"
 clap = "4.0.18"
 termion = "*"
+
+[profile.release]
+opt-level = 3
+lto = true
+debug = false
+strip = true
