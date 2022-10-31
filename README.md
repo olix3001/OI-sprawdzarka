@@ -17,7 +17,7 @@ Program przyjmuje pliki wykonywalne, nie należy podawać plików z kodem źród
 
 Ze względu na konstrukcję w niektórych przypadkach program może pokazywać wolniejszy czas wykonania niż jest normalnie.
 
-Program nie jest przystosowany do działania pod systemem innym niż Linux.
+Wersja na windows jest niestabilna i wolniejsza.
 
 ## Python
 

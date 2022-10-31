@@ -9,7 +9,7 @@ edition = "2021"
 colored = "2.0.0"
 process_control = "4.0.0"
 clap = "4.0.18"
-termion = "*"
+crossterm = "*"
 
 [profile.release]
 opt-level = 3

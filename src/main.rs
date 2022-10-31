@@ -33,7 +33,7 @@ fn pad_right(text: String, width: usize) -> String {
 }
 
 fn print_spacer() {
-    let term_width = termion::terminal_size().unwrap().0;
+    let term_width = crossterm::terminal::size().unwrap().0;
     println!("{}", "=".repeat(term_width as usize));
 }
 
@@ -130,8 +130,8 @@ fn main() {
                 // Create test command
                 // println!("{} < {}", executable, test.input.to_str().unwrap());
 
-                let runner = Command::new("sh")
-                    .arg("-c")
+                let runner = Command::new(if cfg!(target_os = "linux") { "sh" } else { "cmd" })
+                    .arg(if cfg!(target_os = "linux") { "-c" } else { "/C" })
                     .arg(format!("{} < {}", executable, test.input.to_str().unwrap()))
                     .stdout(Stdio::piped())
                     .spawn().expect("spawn child");
