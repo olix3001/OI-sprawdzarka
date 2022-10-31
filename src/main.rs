@@ -96,6 +96,7 @@ fn main() {
 
     // Create list of failed tests
     let failed_tests: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
+    let tle_tests: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
 
     // Run tests
     print_spacer();
@@ -111,8 +112,8 @@ fn main() {
         let time_limit = Arc::clone(&time_limit);
         let mem_limit = Arc::clone(&mem_limit);
 
-
         let failed_tests = Arc::clone(&failed_tests);
+        let tle_tests = Arc::clone(&tle_tests);
         
         // And also clone counters
         let ok_counter = Arc::clone(&ok_counter);
@@ -152,6 +153,13 @@ fn main() {
                 if output_data.is_none() {
                     println!("{} {} - {}s", pretty_name, "TLE".yellow().bold(), exec_time.as_secs());
                     tle_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
+                    // Add this test to the list of tle ones
+                    {
+                        let mut tle_tests = tle_tests.lock().unwrap();
+                        let name = test.name.clone();
+                        tle_tests.push(name);
+                    }
                     continue;
                 }
 
@@ -197,6 +205,10 @@ fn main() {
         print_spacer();
         let failed_data = failed_tests.lock().unwrap();
         println!("{} {}", "Failed tests:".red(), failed_data.join(", "));
+
+        print_spacer();
+        let tle_data = tle_tests.lock().unwrap();
+        println!("{} {}", "Tle tests:".yellow(), tle_data.join(", "));
     }
 
 }
