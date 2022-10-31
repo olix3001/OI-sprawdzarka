@@ -61,7 +61,7 @@ fn main() {
     let mut tests: Vec<Test> = Vec::new();
     for file in fs::read_dir(inputs).unwrap() {
         let file = file.unwrap().path();
-        if file.extension().unwrap() != "in" { continue; } // skip outputs and other files
+        if file.extension().is_none() || file.extension().unwrap() != "in" { continue; } // skip outputs and other files
 
         // Get input
         let input_stem = file.file_stem().unwrap();
@@ -93,7 +93,7 @@ fn main() {
     let ok_counter = Arc::new(AtomicI32::new(0));
     let err_counter = Arc::new(AtomicI32::new(0));
     let tle_counter = Arc::new(AtomicI32::new(0));
-    
+
     // Create list of failed tests
     let failed_tests: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
 
@@ -110,6 +110,7 @@ fn main() {
         let executable = executable.clone();
         let time_limit = Arc::clone(&time_limit);
         let mem_limit = Arc::clone(&mem_limit);
+
 
         let failed_tests = Arc::clone(&failed_tests);
         
@@ -161,6 +162,7 @@ fn main() {
                 if output == test_data {
                     println!("{} {} - {}s", pretty_name, "OK".green(), exec_time.as_secs_f32());
                     ok_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
                 } else {
                     println!("{} {}", pretty_name, "WRONG ANSWER".red().bold());
                     err_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
