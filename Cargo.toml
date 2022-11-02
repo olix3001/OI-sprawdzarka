@@ -5,6 +5,12 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "sprawdzarka-oi"
+path = "src/main.rs"
+test = false
+bench = false
+
 [dependencies]
 colored = "2.0.0"
 process_control = "4.0.0"

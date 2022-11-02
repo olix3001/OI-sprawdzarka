@@ -3,6 +3,11 @@
 Ten program automatyzuje sprawdzanie programu na dużej ilości testów. <br/>
 Stworzyłem go aby automatycznie testować swoje programy na OI.
 
+## Instalacja
+Najłatwiejszym sposobem na instalacje jest wpisanie komendy `cargo install --git https://github.com/olix3001/OI-sprawdzarka`. Następnie dostępne będzie w systemie polecenie `sprawdzarka-oi`.
+
+Innym sposobem jest ręczne skompilowanie źródła lub użycie plików z zakładki releases na github.
+
 ## Screenshot
 
 ![Sprawdzarka](./images/sprawdzarka.jpg)

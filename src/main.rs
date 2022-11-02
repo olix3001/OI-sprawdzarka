@@ -131,17 +131,20 @@ fn main() {
                 // Create test command
                 // println!("{} < {}", executable, test.input.to_str().unwrap());
 
-                let runner = Command::new(if cfg!(target_os = "linux") { "sh" } else { "cmd" })
-                    .arg(if cfg!(target_os = "linux") { "-c" } else { "/C" })
+                let runner = Command::new(if cfg!(target_family = "unix") { "sh" } else { "cmd" })
+                    .arg(if cfg!(target_family = "unix") { "-c" } else { "/C" })
                     .arg(format!("{} < {}", executable, test.input.to_str().unwrap()))
                     .stdout(Stdio::piped())
                     .spawn().expect("spawn child");
 
                 // Get output and set limits
                 let output_data = runner.controlled_with_output()
-                    .time_limit(Duration::from_secs(*time_limit)).terminate_for_timeout()
-                    .memory_limit(*mem_limit)
-                    .wait();
+                    .time_limit(Duration::from_secs(*time_limit)).terminate_for_timeout();
+
+                #[cfg(any(target_os = "linux", target_os = "windows"))]
+                output_data.memory_limit(*mem_limit);
+                
+                let output_data = output_data.wait();
 
                 // Measure time of execution
                 let exec_time = start_time.elapsed();
