@@ -129,7 +129,6 @@ fn main() {
                 let start_time = Instant::now();
 
                 // Create test command
-                // println!("{} < {}", executable, test.input.to_str().unwrap());
 
                 let runner = Command::new(if cfg!(target_family = "unix") { "sh" } else { "cmd" })
                     .arg(if cfg!(target_family = "unix") { "-c" } else { "/C" })
@@ -142,7 +141,7 @@ fn main() {
                     .time_limit(Duration::from_secs(*time_limit)).terminate_for_timeout();
 
                 #[cfg(any(target_os = "linux", target_os = "windows"))]
-                output_data.memory_limit(*mem_limit);
+                let output_data = output_data.memory_limit(*mem_limit);
                 
                 let output_data = output_data.wait();
 
